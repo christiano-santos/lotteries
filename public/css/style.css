@@ -110,7 +110,10 @@ footer{
 @media (max-width: 575.98px){
     body{
         font-size: 0.9em;
-        overflow-x:hidden;
+        overflow-x:hidden !important;
+    }
+    header,nav{
+        overflow-x:hidden !important;
     }
     h4{
         font-size: 1.25em;
@@ -138,5 +141,40 @@ footer{
     }
     .arrecadacaoTotal{
         margin-top: 1em;
+    }
+    
+}
+@media (max-width: 410px){
+    body,header,nav{
+        font-size: 0.8em;
+        overflow-x:hidden !important;
+    }
+    header,nav{
+        overflow-x:hidden !important;
+    }
+    select{
+        font-size: 0.8rem;
+        /* margin-right: 10px; */
+    }
+    input{
+        font-size: 0.8rem;
+        /* margin-left: 10px; */
+        padding: 5px;
+    }
+    #buscar{
+        display: block;
+        width: 81%;
+        margin-top: 5px;
+        font-size: 0.8rem;  
+    }
+    #logo{
+        font-size: 4em !important;   
+    }
+    #buscarapida{
+        font-size: 2em !important;
+    }
+
+    .resultado{
+        font-size: 0.8em;
     }
 }

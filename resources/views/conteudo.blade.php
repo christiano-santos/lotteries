@@ -2,7 +2,7 @@
 @section('cabecalho')
 <header>
     <nav class="navhead1 navbar navbar-expand-lg navbar-light">
-        <a class="navbar-brand" style="font-family: 'Russo One', sans-serif;font-size: 2em;color:white" href="/">
+        <a id="logo" class="navbar-brand" style="font-family: 'Russo One', sans-serif;font-size: 2em;color:white" href="/">
             Loterias</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSite" aria-controls="navbarSite" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -21,9 +21,8 @@
     </nav>
     <nav class="navhead2 navbar navbar-light justify-content-end">
         <div class="d-flex align-items-baseline">
-            <h5 class="mr-3" style="font-family: 'Russo One', sans-serif;color:white">Busca Rápida</h5>
+            <h5 id="buscarapida" class="mr-3 botao" style="font-family: 'Russo One', sans-serif;color:white">Busca Rápida</h5>
             <form action="busca" method="POST">
-                <!-- <input type="hidden" name="_method" value="PUT"> -->
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                 <div class="form-row" style="margin-right: -50px;">
                     <div class="form-col mr-3">
@@ -35,7 +34,7 @@
                         </select>
                     </div>
                     <input class="form-control w-25 mr-2" placeholder="Nº Concurso" aria-label="Search" name="concurso">
-                    <button class="btn btn btn-success" type="submit">Buscar</button>
+                    <button id="buscar" class="btn btn btn-success" type="submit">Buscar</button>
             </form>
         </div>
     </nav>
@@ -60,7 +59,7 @@
 @endsection
 @section('conteudo')
 @foreach ($resultData as $result)
-<div class="d-flex justify-content-center mt-5 mb-5">
+<div class="d-flex justify-content-center mt-1 mb-1">
     <div class="bg-secondary">
         <span>PUBLICIDADE TOPO</span>
     </div>
@@ -73,7 +72,7 @@
             </div>
         </div>
         <div class="col-lg-8 col-sm-12 mt-3">
-            <div class="container-fluid">
+            <div>
                 <article class="mb-3">
                     <div class="card p-2 resultadoCard">
                         <div class="d-flex align-items-center">
