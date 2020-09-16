@@ -557,23 +557,23 @@ class LoteriasController extends Controller
         }
         if($request->input('concurso')){
             $concurso = (int) $request->input('concurso');
+            $gameBusca = $request->input('jogo');
             $jogoConc = ['games.name' => $request->input('jogo'),'contests.contest' => $concurso];
             $games = $loteriasModel->getPorJogoConcurso($jogoConc);
-            //transforma o objeto em array e verifica se é vazio
-            if (empty((array) $games)) {
-                print_r($games);
-            }else{
+            if (count($games) == 0) {
                 $jogoNaoEncotrado = true;
-                $game = $request->input('jogo');
+                $game = $gameBusca;
                 $games = $loteriasModel->getPorJogo($game);
                 $resultData = $this->formataDados($games);
                 $nameGames = $loteriasModel->getNomeJogos();
                 $jogo = $resultData[0]['name'];
                 return view('conteudo', compact('resultData','nameGames','jogoNaoEncotrado','jogo'));
+            }else{
+                $jogoNaoEncotrado = false;
+                $resultData = $this->formataDados($games);
+                $nameGames = $loteriasModel->getNomeJogos();
+                return view('conteudo', compact('resultData','nameGames','jogoNaoEncotrado'));
             }
-            $resultData = $this->formataDados($games);
-            $nameGames = $loteriasModel->getNomeJogos();
-            return view('conteudo', compact('resultData','nameGames'));
         }else{
             $jogoNaoEncotrado = false;
             $game = $request->input('jogo');
