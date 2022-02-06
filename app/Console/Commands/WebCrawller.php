@@ -9,7 +9,6 @@ use App\Contest;
 use App\Game;
 use App\Result;
 use App\Dresscredition;
-use DateTime;
 
 class WebCrawller extends Command
 {
@@ -18,7 +17,7 @@ class WebCrawller extends Command
      *
      * @var string
      */
-    protected $signature = 'command:WebCrawller Comando para alimentar 
+    protected $signature = 'command:WebCrawller Comando para alimentar
                             a basede dados com novas informações.';
 
     /**
@@ -26,7 +25,7 @@ class WebCrawller extends Command
      *
      * @var string
      */
-    protected $description = 'Faz um Get no site de loteiras da caixa e pega o resultado de 
+    protected $description = 'Faz um Get no site de loteiras da caixa e pega o resultado de
                              todos os jogos por concurso e armazena na base de dados.';
 
     /**
@@ -54,8 +53,8 @@ class WebCrawller extends Command
         echo $nomeAtual."\n";
         $resultadoJogo = array();
                         $nome = $atual->filter('div > h3')->text();
-                        for ($j=0; $j < $atual->filter('div > ul > li')->count(); $j++) { 
-                            $resultado = $atual->filter('div > ul > li')->eq($j)->text();   
+                        for ($j=0; $j < $atual->filter('div > ul > li')->count(); $j++) {
+                            $resultado = $atual->filter('div > ul > li')->eq($j)->text();
                             array_push($resultadoJogo,$resultado);
                         }
                         //FALTA ADICIONAR VERIFICAÇÃO SE CONCURSO ACUMULOU NO BANCO O CÓDIGO
@@ -81,7 +80,7 @@ class WebCrawller extends Command
                         $contest->accumulated = $sorteioAcumulado;
                         //verifica se concurso já existe no banco antes de salva-lo, caso sim encerra o fluxo
                         $concursoAtual = $contest::where('contest',$conc)->pluck('contest');
-                        //echo count($concursoAtual); 
+                        //echo count($concursoAtual);
                         //print_r($concursoAtual);
                         if (count($concursoAtual) > 0) {
                             echo 'concurso '.$concursoAtual[0].' já foi salvo!'."\n";
@@ -94,7 +93,7 @@ class WebCrawller extends Command
                             $numeroconcurso = (int) $numeroconcurso;
                             $consulta = $contest::where('contest',$numeroconcurso)->pluck('id');
                             $result_Tab->contest_id = $consulta[0];
-                            for ($y=0; $y < count($resultadoJogo); $y++) { 
+                            for ($y=0; $y < count($resultadoJogo); $y++) {
                                 $result_Tab->{$pos[$y]} = $resultadoJogo[$y];
                             }
                             $result_Tab->save();
@@ -112,7 +111,7 @@ class WebCrawller extends Command
                             echo "Salvo com sucesso!"."\n";
                         }
                         $acumulou = $atual->filter('div > h3 > a')->text();
-                        
+
                         // echo $nome."\n";
                         // print_r($resultadoJogo);
                         // echo $acumulou."\n";
@@ -134,7 +133,7 @@ class WebCrawller extends Command
         $resultadoJogo = array();
                         $nome = $atual->filter('div > h3')->text();
                         for ($j=0; $j < $atual->filter('div > table > tbody > tr > td')->count(); $j++) {
-                            $resultado = $atual->filter('div > table > tbody > tr > td')->eq($j)->text();   
+                            $resultado = $atual->filter('div > table > tbody > tr > td')->eq($j)->text();
                             array_push($resultadoJogo,$resultado);
                         }
                         //instancia um objeto do tipo Game para acesso a base de dados
@@ -159,7 +158,7 @@ class WebCrawller extends Command
                         $contest->accumulated = $sorteioAcumulado;
                         //verifica se concurso já existe no banco antes de salva-lo, caso sim encerra o fluxo
                         $concursoAtual = $contest::where('contest',$conc)->pluck('contest');
-                        //echo count($concursoAtual); 
+                        //echo count($concursoAtual);
                         //print_r($concursoAtual);
                         if (count($concursoAtual) > 0) {
                             echo 'concurso '.$concursoAtual[0].' já foi salvo!'."\n";
@@ -172,7 +171,7 @@ class WebCrawller extends Command
                             $numeroconcurso = (int) $numeroconcurso;
                             $consulta = $contest::where('contest',$numeroconcurso)->pluck('id');
                             $result_Tab->contest_id = $consulta[0];
-                            for ($y=0; $y < count($resultadoJogo); $y++) { 
+                            for ($y=0; $y < count($resultadoJogo); $y++) {
                                 $result_Tab->{$pos[$y]} = $resultadoJogo[$y];
                             }
                             $result_Tab->save();
@@ -273,7 +272,7 @@ class WebCrawller extends Command
                 print $testaVazio."\n";
                 sleep(2);
                 if (!is_null($testaVazio)) {
-                    $controleReq = 11;                
+                    $controleReq = 11;
                 }else{
                     echo 'Resposta do Goutte null, tentando novamente...'.$controleReq."\n";
                 }
@@ -298,32 +297,32 @@ class WebCrawller extends Command
 
     public function handle()
     {
-
         define('BASE_URL','http://loterias.caixa.gov.br');
         $pos = ["first_decade","second_decade","third_decade","fourth_decade","fifth_decade","sixth_decade","seventh_decade","eighth_decade","ninth_decade","tenth_decade","eleventh_decade","twelfth_decade","thirteenth_decade","fourteenth_decade","fifteenth_decade","sixteenth_decade","seventeenth_decade","eighteenth_decade","nineteenth_decade","twentieth_decade"];
         $client = new Client();
-        $clienteHttp = HttpClient::create();
         $crawler = $client->request('GET', 'http://loterias.caixa.gov.br/wps/portal/loterias', [
             'headers' => [
                 'Accept' => 'application/json',
             ],
         ]);
         //pega as divs que contem os nomes e resultados dos jogos
-        $result =  $crawler->filter('div.products > div.clearfix');
+        $result =  $crawler->filter('div.products > div.product');
         //itera sobre as divs dos jogos
         for ($i=0; $i < $result->count(); $i++) {
             //seleciona a div, fazendo com que a variável receba seu conteudo
-            $atual =  $result->filter('div.clearfix')->eq($i);
+            $atual =  $result->filter('div.product')->eq($i);
             //variável recebe o nome do jogo da div selecionada para que o switch possa descatar as divs de jogos que não interessam
             $nomeAtual = $atual->filter('div > h3')->text();
             $link = $atual->selectLink('Confira o resultado ›');
             $link = (string) $link->link()->getUri(); //pega o endereço do link
+            // echo $link."\n";
             $dresscreditions = new Dresscredition();
             $sorteioAcumulado = "";
+            echo $nomeAtual."\n";
             switch ($nomeAtual) {
                 case 'MEGA-SENA':
                         print "Mega";
-                        $fimUrl = 'pw/Z7_HGK818G0KO6H80AU71KG7J0072/res/id=buscaResultado'; 
+                        $fimUrl = 'pw/Z7_HGK818G0KO6H80AU71KG7J0072/res/id=buscaResultado';
                         $retorno = $this->getDetalhes($link,$fimUrl);
                         $resposta = $retorno[0];
                         $crawlerTeste = $retorno[1];
@@ -359,11 +358,11 @@ class WebCrawller extends Command
                         //print_r($resultadosCrawlerTeste->filter('div > div > p'));
                         $resultadosCrawlerTeste = $resultadosCrawlerTeste->filter('p')->eq(0)->text();
                         $temp = explode(" ",$resultadosCrawlerTeste);
-                        for ($s=0; $s <= 5; $s++) { 
+                        for ($s=0; $s <= 5; $s++) {
                             $temp2[$s] = $temp[$s]." ";
                         }
                         $resultadosCrawlerTeste = implode($temp2);
-                        $next_contest = $resposta->{'dataStr'}." ".$resultadosCrawlerTeste.$resposta->{'dt_proximo_concursoStr'}.' '.$resposta->{'vr_estimativa'}."\n"; 
+                        $next_contest = $resposta->{'dataStr'}." ".$resultadosCrawlerTeste.$resposta->{'dt_proximo_concursoStr'}.' '.$resposta->{'vr_estimativa'}."\n";
                         $dresscreditions->next_contest = $next_contest;
                         echo $next_contest;
                         $sorteioAcumulado = $resposta->{'sorteioAcumulado'};
@@ -376,10 +375,10 @@ class WebCrawller extends Command
                         echo '*****************************************************************'."\n";
                         $this->resultDiv($atual,$dresscreditions,$sorteioAcumulado);
                     break;
-                
+
                 case 'LOTOFÁCIL':
                     sleep(2);
-                    print "Lotofácil";
+                    print "Lotofácil"."\n";
                     $fimUrl = 'pw/Z7_61L0H0G0J0VSC0AC4GLFAD2003/res/id=buscaResultado';
                     $retorno = $this->getDetalhes($link,$fimUrl);
                     $resposta = $retorno[0];
@@ -421,11 +420,11 @@ class WebCrawller extends Command
                     //extrai dados para popular coluna next_context na tabela desscreditions
                     $resultadosCrawlerTeste = $resultadosCrawlerTeste->filter('p')->eq(0)->text();
                     $temp = explode(" ",$resultadosCrawlerTeste);
-                    for ($s=0; $s <= 5; $s++) { 
+                    for ($s=0; $s <= 5; $s++) {
                         $temp2[$s] = $temp[$s]." ";
                     }
                     $resultadosCrawlerTeste = implode($temp2);
-                    $next_contest = $resposta->{'dt_apuracaoStr'}." ".$resultadosCrawlerTeste.$resposta->{'dtProximoConcursoStr'}.' '.$resposta->{'vrEstimativa'}."\n"; 
+                    $next_contest = $resposta->{'dt_apuracaoStr'}." ".$resultadosCrawlerTeste.$resposta->{'dtProximoConcursoStr'}.' '.$resposta->{'vrEstimativa'}."\n";
                     $dresscreditions->next_contest = $next_contest;
                     echo $next_contest;
                     $sorteioAcumulado = $resposta->{'sorteioAcumulado'};
@@ -479,11 +478,11 @@ class WebCrawller extends Command
                     //extrai dados para popular coluna next_context na tabela desscreditions
                     $resultadosCrawlerTeste = $resultadosCrawlerTeste->filter('p')->text();
                     $temp = explode(" ",$resultadosCrawlerTeste);
-                    for ($s=0; $s <= 5; $s++) { 
+                    for ($s=0; $s <= 5; $s++) {
                         $temp2[$s] = $temp[$s]." ";
                     }
                     $resultadosCrawlerTeste = implode($temp2);
-                    $next_contest = $resposta->{'dataStr'}." ".$resultadosCrawlerTeste.$resposta->{'dtProximoConcursoStr'}.' '.$resposta->{'vrEstimado'}."\n"; 
+                    $next_contest = $resposta->{'dataStr'}." ".$resultadosCrawlerTeste.$resposta->{'dtProximoConcursoStr'}.' '.$resposta->{'vrEstimado'}."\n";
                     echo $next_contest;
                     $dresscreditions->next_contest = $next_contest;
                     $sorteioAcumulado = $resposta->{'sorteioAcumulado'};
@@ -546,11 +545,11 @@ class WebCrawller extends Command
                     //extrai dados para popular coluna next_context na tabela desscreditions
                     $resultadosCrawlerTeste = $resultadosCrawlerTeste->filter('p')->text();
                     $temp = explode(" ",$resultadosCrawlerTeste);
-                    for ($s=0; $s <= 5; $s++) { 
+                    for ($s=0; $s <= 5; $s++) {
                         $temp2[$s] = $temp[$s]." ";
                     }
                     $resultadosCrawlerTeste = implode($temp2);
-                    $next_contest = $resposta->{'dtApuracaoStr'}." ".$resultadosCrawlerTeste.$resposta->{'dtProximoConcursoStr'}.' '.$resposta->{'vrEstimativa'}."\n"; 
+                    $next_contest = $resposta->{'dtApuracaoStr'}." ".$resultadosCrawlerTeste.$resposta->{'dtProximoConcursoStr'}.' '.$resposta->{'vrEstimativa'}."\n";
                     echo $next_contest;
                     $dresscreditions->next_contest = $next_contest;
                     $sorteioAcumulado = $resposta->{'sorteioAcumulado'};
@@ -612,11 +611,11 @@ class WebCrawller extends Command
                     //extrai dados para popular coluna next_context na tabela desscreditions
                     $resultadosCrawlerTeste = $resultadosCrawlerTeste->filter('p')->text();
                     $temp = explode(" ",$resultadosCrawlerTeste);
-                    for ($s=0; $s <= 5; $s++) { 
+                    for ($s=0; $s <= 5; $s++) {
                         $temp2[$s] = $temp[$s]." ";
                     }
                     $resultadosCrawlerTeste = implode($temp2);
-                    $next_contest = $resposta->{'dt_APURACAOStr'}." ".$resultadosCrawlerTeste.$resposta->{'dt_PROXIMO_CONCURSOStr'}.' '.$resposta->{'vr_ESTIMATIVA_FAIXA_1'}."\n"; 
+                    $next_contest = $resposta->{'dt_APURACAOStr'}." ".$resultadosCrawlerTeste.$resposta->{'dt_PROXIMO_CONCURSOStr'}.' '.$resposta->{'vr_ESTIMATIVA_FAIXA_1'}."\n";
                     echo $next_contest;
                     $dresscreditions->next_contest = $next_contest;
                     $sorteioAcumulado = $resposta->{'sorteioAcumulado'};
@@ -640,7 +639,7 @@ class WebCrawller extends Command
                     $resultadoPremiacao = $crawlerTeste->filter('div.gray-text');
                     //extrai dadas para popular coluna total_collection na tabela desscreditions
                     $controle = 0;
-                    //$awardTemp1 = $resultadoPremiacao->filter('p') 
+                    //$awardTemp1 = $resultadoPremiacao->filter('p')
                     $awardTemp = [];
                     while ($controle <= 7) {
                         if ($controle <= 3) {
@@ -656,7 +655,7 @@ class WebCrawller extends Command
                             }elseif ($controle == 3) {
                                 $ganhadores = "Terno "."- "."3".", ".$resposta->{'qt_ganhador_terno_faixa1'}.' apostas ganhadoras, '.$resposta->{'vr_terno_faixa1'}." "."\n";
                                 array_push($awardTemp, $ganhadores);
-                            }   
+                            }
                         }else{
                             if ($controle == 4) {
                                 $ganhadores = "Premiação - 2º Sorteio "."Sena "."- "."6".", ".$resposta->{'ganhadores_sena2'}.' apostas ganhadoras, '.$resposta->{'valor_sena2'}." "."\n";
@@ -674,7 +673,7 @@ class WebCrawller extends Command
                         }
                         $controle++;
                     }
-        
+
                     //extrai dados para popular coluna award
                     $award = '';
                     foreach($awardTemp as $value){
@@ -689,11 +688,11 @@ class WebCrawller extends Command
                     //extrai dados para popular coluna next_context na tabela desscreditions
                     $resultadosCrawlerTeste = $resultadosCrawlerTeste->filter('p')->text();
                     $temp = explode(" ",$resultadosCrawlerTeste);
-                    for ($s=0; $s <= 5; $s++) { 
+                    for ($s=0; $s <= 5; $s++) {
                         $temp2[$s] = $temp[$s]." ";
                     }
                     $resultadosCrawlerTeste = implode($temp2);
-                    $next_contest = $resposta->{'dataStr'}." ".$resultadosCrawlerTeste.$resposta->{'data_proximo_concursoStr'}.' '.$resposta->{'valor_estimativa'}."\n"; 
+                    $next_contest = $resposta->{'dataStr'}." ".$resultadosCrawlerTeste.$resposta->{'data_proximo_concursoStr'}.' '.$resposta->{'valor_estimativa'}."\n";
                     echo $next_contest;
                     $dresscreditions->next_contest = $next_contest;
                     $sorteioAcumulado = $resposta->{'acumulado'};
@@ -714,8 +713,8 @@ class WebCrawller extends Command
                         $resposta = $retorno[0];
                         $crawlerTeste = $retorno[1];
                         $resultadoJogo = array();
-                        for ($j=0; $j < $atual->filter('div > ul > li')->count(); $j++) { 
-                            $resultado = $atual->filter('div > ul > li')->eq($j)->text();   
+                        for ($j=0; $j < $atual->filter('div > ul > li')->count(); $j++) {
+                            $resultado = $atual->filter('div > ul > li')->eq($j)->text();
                             array_push($resultadoJogo,$resultado);
                         }
                         $sorteioAcumulado = $resposta->{'sorteioAcumulado'};
@@ -748,7 +747,7 @@ class WebCrawller extends Command
                         $contest->accumulated = $sorteioAcumulado;
                         //verifica se concurso já existe no banco antes de salva-lo, caso sim encerra o fluxo
                         $concursoAtual = $contest::where('contest',$conc)->pluck('contest');
-                        //echo count($concursoAtual); 
+                        //echo count($concursoAtual);
                         //print_r($concursoAtual);
                         if (count($concursoAtual) > 0) {
                             echo 'concurso '.$concursoAtual[0].' já foi salvo!'."\n";
@@ -761,7 +760,7 @@ class WebCrawller extends Command
                             $numeroconcurso = (int) $numeroconcurso;
                             $consulta = $contest::where('contest',$numeroconcurso)->pluck('id');
                             $result_Tab->contest_id = $consulta[0];
-                            for ($y=0; $y < count($resultadoJogo); $y++) { 
+                            for ($y=0; $y < count($resultadoJogo); $y++) {
                                 $result_Tab->{$pos[$y]} = $resultadoJogo[$y];
                             }
                             $resultadosCrawlerTeste = $crawlerTeste->filter('div.resultado-loteria > div');
@@ -798,7 +797,7 @@ class WebCrawller extends Command
                             //extrai dados para popular coluna next_context na tabela desscreditions
                             $resultadosCrawlerTeste = $resultadosCrawlerTeste->filter('p')->text();
                             $temp = explode(" ",$resultadosCrawlerTeste);
-                            for ($s=0; $s <= 5; $s++) { 
+                            for ($s=0; $s <= 5; $s++) {
                                 $temp2[$s] = $temp[$s]." ";
                             }
                             $resultadosCrawlerTeste = implode($temp2);
@@ -818,17 +817,17 @@ class WebCrawller extends Command
                             echo '*****************************************************************'."\n";
 
                             $result_Tab->save();
-                        
+
                             echo "Salvo com sucesso!"."\n";
                         }
                     break;
                 default:
-                    
+                        echo $nomeAtual." Não entrou em nenhuma opção"."\n";
                     break;
             }
 
             $atual = '';
             $nomeAtual = '';
-        }    
+        }
     }
 }
