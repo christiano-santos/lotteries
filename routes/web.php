@@ -17,7 +17,9 @@ use Illuminate\Support\Facades\Route;
 //     return view('conteudo');
 // });
 
-Route::get('/', 'LoteriasController@index');
-Route::get('{game}', 'LoteriasController@forGame');
-Route::post('busca','LoteriasController@searchGame');
+Route::view("/",'index');
+
+// Route::get('/', 'LoteriasController@index');
+// Route::get('{game}', 'LoteriasController@forGame');
+// Route::post('busca','LoteriasController@searchGame');
 //'LoteriasController@searchGame'
