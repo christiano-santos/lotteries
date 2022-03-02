@@ -42,6 +42,8 @@ class WebCrawller extends Command
         $result_Tab = new Result;
         //pega o id do jogo atual na tabela, retorna um array
         $consulta = $game::where('name',$nomeAtual)->pluck('id');
+        echo "debug"."\n";
+        echo $consulta;
         //atributo recebe o valor do id do jogo atual.
         $contest->game_id = $consulta[0];
         $descricao = $atual->filter('div > p')->text();
@@ -92,40 +94,14 @@ class WebCrawller extends Command
 
     }
 
-    public function getDetalhes($link,$fimUrl){
+    public function getDetalhes($fimUrl){
         $clienteHttp = HttpClient::create();
-        $headers = "";
         $json = "";
         $controleReq = 0;
-        while($controleReq <= 10){
-            try {
-                sleep(3);
-                $respostaSym = $clienteHttp->request('GET',$link,['timeout' => 60]); //usando Symfony
-                $headers = (string) $respostaSym->getHeaders()['ibm-web2-location'][0];
-                if (!is_null($headers)) {
-                    print 'headers:'."\n";
-                    print $headers."\n";
-                    $controleReq = 11;
-                    sleep(3);
-                }else{
-                    echo 'Resposta do Goutte null, tentando novamente...'.$controleReq."\n";
-                    sleep(3);
-                }
-            } catch (\Throwable $th) {
-                $clienteHttp = HttpClient::create();
-                print 'Falha na requisição do Symfony tentando novamente...'.$controleReq."\n";
-                sleep(60);
-                $controleReq++;
-            }
-        }
-
-        $controleReq = 0;
-
         while ($controleReq <= 110) {
             sleep(3);
             echo "Buscando JSON"."\n";
-            echo BASE_URL.$headers.$fimUrl."\n";
-            $respostaJson = $clienteHttp->request('GET',BASE_URL.$headers.$fimUrl,[
+            $respostaJson = $clienteHttp->request('GET',BASE_URL.$fimUrl,[
                 'headers' => [
                     'Accept' => 'application/json',
                 ],
@@ -172,9 +148,9 @@ class WebCrawller extends Command
 
     public function handle()
     {
-        define('BASE_URL','http://loterias.caixa.gov.br');
+        define('BASE_URL','https://servicebus2.caixa.gov.br/portaldeloterias/api/');
         $client = new Client();
-        $crawler = $client->request('GET', 'http://loterias.caixa.gov.br/wps/portal/loterias', [
+        $crawler = $client->request('GET', 'https://loterias.caixa.gov.br/Paginas/default.aspx', [
             'headers' => [
                 'Accept' => 'application/json',
             ],
@@ -187,51 +163,47 @@ class WebCrawller extends Command
             $atual =  $result->filter('div.product')->eq($i);
             //variável recebe o nome do jogo da div selecionada para que o switch possa descatar as divs de jogos que não interessam
             $nomeAtual = $atual->filter('div > h3')->text();
-            $link = $atual->selectLink('Confira o resultado ›');
-            $link = (string) $link->link()->getUri(); //pega o endereço do link
-            $dresscreditions = new Dresscredition();
             echo $nomeAtual."\n";
             switch ($nomeAtual) {
                 case 'MEGA-SENA':
-                    $fimUrl = 'pw/Z7_HGK818G0KO6H80AU71KG7J0072/res/id=buscaResultado';
-                    $retorno = $this->getDetalhes($link,$fimUrl);
+                    $fimUrl = 'megasena/';
+                    $retorno = $this->getDetalhes($fimUrl);
                     $this->dresscreditions($atual,$retorno,$nomeAtual);
                 break;
                 case 'LOTOFÁCIL':
                     sleep(2);
-                    $fimUrl = 'pw/Z7_61L0H0G0J0VSC0AC4GLFAD2003/res/id=buscaResultado';
-                    $retorno = $this->getDetalhes($link,$fimUrl);
+                    $fimUrl = 'lotofacil/';
+                    $retorno = $this->getDetalhes($fimUrl);
                     $this->dresscreditions($atual,$retorno,$nomeAtual);
                 break;
                 case 'QUINA':
                     sleep(2);
-                    $fimUrl = 'pw/Z7_HGK818G0K8ULB0QT4MEM8L0086/res/id=buscaResultado';
-                    $retorno = $this->getDetalhes($link,$fimUrl);
+                    $fimUrl = 'quina/';
+                    $retorno = $this->getDetalhes($fimUrl);
                     $this->dresscreditions($atual,$retorno,$nomeAtual);
                 break;
                 case 'LOTOMANIA':
                     sleep(2);
-                    $fimUrl = 'pw/Z7_61L0H0G0JGJVA0AKLR5T3K00V0/res/id=buscaResultado';
-                    $retorno = $this->getDetalhes($link,$fimUrl);
+                    $fimUrl = 'lotomania/';
+                    $retorno = $this->getDetalhes($fimUrl);
                     $this->dresscreditions($atual,$retorno,$nomeAtual);
                 break;
                 case 'TIMEMANIA':
                     sleep(2);
-                    $fimUrl = 'pw/Z7_61L0H0G0JGJVA0AKLR5T3K00M4/res/id=buscaResultado';
-                    $retorno = $this->getDetalhes($link,$fimUrl);
+                    $fimUrl = 'timemania/';
+                    $retorno = $this->getDetalhes($fimUrl);
                     $this->dresscreditions($atual,$retorno,$nomeAtual);
                 break;
                 case 'DUPLA SENA':
                     sleep(2);
-                    $fimUrl = 'pw/Z7_HGK818G0KGSE30Q3I6OOK60006/res/id=buscaResultado';
-                    $retorno = $this->getDetalhes($link,$fimUrl);
+                    $fimUrl = 'duplasena/';
+                    $retorno = $this->getDetalhes($fimUrl);
                     $this->dresscreditions($atual,$retorno,$nomeAtual);
                 break;
                 case 'DIA DE SORTE':
                         sleep(2);
-                        print 'Dia de sorte';
-                        $fimUrl = 'pw/Z7_HGK818G0KO5GE0Q8PTB11800G3/res/id=buscaResultado';
-                        $retorno = $this->getDetalhes($link,$fimUrl);
+                        $fimUrl = 'diadesorte/';
+                        $retorno = $this->getDetalhes($fimUrl);
                         $this->dresscreditions($atual,$retorno,$nomeAtual);
                 break;
                 default:
